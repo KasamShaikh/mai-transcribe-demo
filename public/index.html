@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAI-Transcribe-2 · Live Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=6" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">MAI</div>
+      <div class="brand-text">
+        <h1>MAI-Transcribe-2</h1>
+        <p>Fast, multilingual speech transcription from Microsoft AI</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge badge-preview">Preview</span>
+      <span class="badge">Central India</span>
+      <span class="badge">Keyless · Entra ID</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ INPUT / CONTROLS ============ -->
+    <section class="card panel-input">
+      <h2 class="card-title">1 · Speak or upload</h2>
+
+      <div class="record-row">
+        <button id="recordBtn" class="record-btn" aria-label="Record">
+          <span class="mic-icon"></span>
+        </button>
+        <div class="record-meta">
+          <div id="recordState" class="record-state">Tap to record</div>
+          <div id="recordTimer" class="record-timer">00:00</div>
+        </div>
+      </div>
+
+      <div class="or-divider"><span>or</span></div>
+
+      <label id="dropZone" class="dropzone" for="fileInput">
+        <span class="dz-title">Drop an audio file or click to browse</span>
+        <span class="dz-sub">WAV · MP3 · M4A · WebM · OGG · FLAC</span>
+        <input id="fileInput" type="file" accept="audio/*" hidden />
+      </label>
+      <div id="fileName" class="file-name" hidden></div>
+
+      <h2 class="card-title mt">2 · Options</h2>
+
+      <div class="field">
+        <span class="field-label">Model</span>
+        <div class="model-selection">
+          <span class="model-dot"></span>
+          <span>MAI-Transcribe-2</span>
+          <span class="model-status">Active</span>
+        </div>
+        <p class="field-hint">Automatically detects languages and handles mixed-language conversations.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-row">
+          <span class="field-label">Speaker labels</span>
+          <label class="switch">
+            <input type="checkbox" id="diarizationToggle" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="field-hint">Separates each voice as Speaker 1, Speaker 2, and so on.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-row">
+          <span class="field-label">Keyword biasing (domain terms)</span>
+          <label class="switch">
+            <input type="checkbox" id="biasingToggle" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <textarea id="phrases" class="phrases" rows="2" spellcheck="false">NEFT, RTGS, KYC, EMI, ICICI Lombard, NIFTY, UPI, IFSC</textarea>
+        <p class="field-hint">Comma-separated. Boosts recognition of names, acronyms &amp; jargon.</p>
+      </div>
+
+      <button id="transcribeBtn" class="primary-btn" disabled>
+        <span class="btn-label">Transcribe</span>
+        <span class="btn-spinner" hidden></span>
+      </button>
+
+      <div class="try-card">
+        <div class="try-label">Try saying (English + Hindi)</div>
+        <p class="try-line">“Namaste, main ICICI Lombard se bol raha hoon. Aapka KYC pending hai — please NEFT se payment kar dijiye by Friday.”</p>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section class="card panel-output">
+      <h2 class="card-title">Transcript</h2>
+
+      <div id="statBar" class="stat-bar" hidden>
+        <div class="stat"><span class="stat-k">Engine</span><span class="stat-v" id="statEngine">—</span></div>
+        <div class="stat"><span class="stat-k">Languages</span><span class="stat-v" id="statLangs">—</span></div>
+        <div class="stat"><span class="stat-k">Audio</span><span class="stat-v" id="statAudio">—</span></div>
+        <div class="stat"><span class="stat-k">Latency</span><span class="stat-v" id="statLatency">—</span></div>
+        <div class="stat stat-accent"><span class="stat-k">Speed</span><span class="stat-v" id="statSpeed">—</span></div>
+      </div>
+
+      <audio id="player" class="player" controls hidden></audio>
+
+      <div id="empty" class="empty">
+        <div class="empty-icon"></div>
+        <p>Record or upload audio, then hit <strong>Transcribe</strong>.<br />Your words appear here — tagged by detected language.</p>
+      </div>
+
+      <div id="transcript" class="transcript" hidden></div>
+
+      <div id="speakerNote" class="bias-note" hidden></div>
+      <div id="biasNote" class="bias-note" hidden></div>
+      <div id="errorBox" class="error-box" hidden></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication</span>
+  </footer>
+
+  <script src="app.js?v=6"></script>
+</body>
+</html>
