@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAI-Transcribe-2 · Way it works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="how-it-works.css?v=1" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">MAI</div>
+      <div class="brand-text">
+        <h1>MAI-Transcribe-2</h1>
+        <p>Fast, multilingual speech transcription from Microsoft AI</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge badge-preview">Preview</span>
+      <span class="badge">Central India</span>
+      <span class="badge">Keyless · Entra ID</span>
+    </div>
+  </header>
+
+  <nav class="top-nav">
+    <a href="index.html">Batch</a>
+    <a href="realtime.html">Real time</a>
+    <a href="how-it-works.html" class="active">Way it works</a>
+  </nav>
+
+  <main class="how">
+    <section class="card intro-card">
+      <h2 class="card-title">How each pipeline behaves</h2>
+      <p class="lead">
+        The <strong>Real time</strong> tab offers three live pipelines. They all capture microphone
+        audio the same way — a browser <em>AudioWorklet</em> resamples the mic to <strong>16&nbsp;kHz mono
+        PCM16</strong> and streams it over a WebSocket. The server holds the Azure credentials
+        (keyless Entra ID), so <strong>no token ever reaches the browser</strong>. What differs is
+        <em>how</em> the audio becomes text.
+      </p>
+      <div class="flow small">
+        <span class="flow-step">🎙️ Microphone</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">AudioWorklet<br /><small>16 kHz PCM16</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">WebSocket<br /><small>/ws/realtime</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Pipeline<br /><small>mai / standard / hybrid</small></span>
+      </div>
+    </section>
+
+    <!-- MAI -->
+    <section class="card pipe">
+      <div class="pipe-head">
+        <span class="pipe-badge mai">MAI Near-real-time</span>
+        <span class="pipe-tag">≈ 8-second cadence</span>
+      </div>
+      <p class="pipe-summary">
+        Server buffers your speech and, every ~7&nbsp;seconds of new audio (plus 1&nbsp;second of
+        context), wraps a window as a WAV and sends it to <strong>MAI-Transcribe-2</strong> through the
+        fast-transcription REST API. Completed phrases are appended in order; the overlapping context is
+        dropped by comparing timeline offsets, so nothing is duplicated. You get MAI's full multilingual
+        accuracy, refreshed every few seconds — not word by word.
+      </p>
+      <div class="flow">
+        <span class="flow-step">PCM buffer</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step accent">Rolling 8s<br /><small>WAV window</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">MAI REST<br /><small>enhancedMode</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Offset de-dup</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Ordered text</span>
+      </div>
+      <pre class="snippet"><code># realtime.py — commit a window every ~7s of new audio
+while rb.has_window():
+    pcm, start_ms, boundary = rb.take_window()
+    raw = await mai_client.transcribe_wav(mai_client.pcm16_to_wav(pcm), definition)
+    phrases = filter_new_phrases(mai_client.normalize(raw)["phrases"], start_ms, boundary)
+    await emit({"type": "chunk", "phrases": phrases})
+    rb.advance()</code></pre>
+      <ul class="chars">
+        <li><b>Latency</b> ~8s per update</li>
+        <li><b>Interim words</b> no</li>
+        <li><b>Speaker labels</b> off</li>
+        <li><b>Best for</b> highest MAI accuracy, Hinglish</li>
+      </ul>
+    </section>
+
+    <!-- STANDARD -->
+    <section class="card pipe">
+      <div class="pipe-head">
+        <span class="pipe-badge standard">Standard Realtime</span>
+        <span class="pipe-tag">instant interim words</span>
+      </div>
+      <p class="pipe-summary">
+        PCM is pushed straight into the <strong>Azure Speech SDK</strong> continuous recognizer. It emits
+        <em>recognizing</em> events with interim words as you speak, then a <em>recognized</em> event with
+        the finished sentence when you pause. This is true streaming — lowest latency — and is
+        English-first with light multilingual auto-detect.
+      </p>
+      <div class="flow">
+        <span class="flow-step">PCM frames</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">PushAudioInputStream</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step accent">Speech SDK<br /><small>continuous</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">recognizing → partial<br />recognized → final</span>
+      </div>
+      <pre class="snippet"><code># realtime.py — bridge SDK callbacks to the WebSocket
+recognizer.recognizing.connect(lambda e: emit_ts({"type": "partial", "text": e.result.text}))
+recognizer.recognized.connect(lambda e: emit_ts({"type": "final", "text": e.result.text}))
+recognizer.start_continuous_recognition()</code></pre>
+      <ul class="chars">
+        <li><b>Latency</b> instant (interim)</li>
+        <li><b>Interim words</b> yes</li>
+        <li><b>Speaker labels</b> n/a</li>
+        <li><b>Best for</b> live captions, dictation</li>
+      </ul>
+    </section>
+
+    <!-- HYBRID -->
+    <section class="card pipe">
+      <div class="pipe-head">
+        <span class="pipe-badge hybrid">Hybrid</span>
+        <span class="pipe-tag">live now, MAI-clean on stop</span>
+      </div>
+      <p class="pipe-summary">
+        Hybrid runs the Standard recognizer for instant captions <em>and</em> buffers the whole recording.
+        When you press <strong>Stop</strong>, the full clip is sent once to MAI-Transcribe-2 and the live
+        transcript is <strong>atomically replaced</strong> by the cleaner MAI result — coherent language
+        detection, better boundaries, and optional speaker labels. If that final pass fails, the live text
+        is kept as-is.
+      </p>
+      <div class="flow labeled">
+        <div class="flow-lane">
+          <span class="lane-tag">While recording</span>
+          <div class="flow">
+            <span class="flow-step">Mic → PCM</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Speech SDK</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Interim captions</span>
+          </div>
+        </div>
+        <div class="flow-lane">
+          <span class="lane-tag">On stop</span>
+          <div class="flow">
+            <span class="flow-step">Full recording</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step accent">MAI REST</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Replace transcript</span>
+          </div>
+        </div>
+      </div>
+      <pre class="snippet"><code># realtime.py — interim live, then one MAI pass replaces everything
+await _run_standard(...)          # streams partial/final while recording
+raw = await mai_client.transcribe_wav(mai_client.pcm16_to_wav(full_recording), definition)
+await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code></pre>
+      <ul class="chars">
+        <li><b>Latency</b> instant + final polish</li>
+        <li><b>Interim words</b> yes</li>
+        <li><b>Speaker labels</b> yes (final)</li>
+        <li><b>Best for</b> demos needing speed &amp; accuracy</li>
+      </ul>
+    </section>
+
+    <!-- COMPARISON -->
+    <section class="card">
+      <h2 class="card-title">Pick a pipeline</h2>
+      <div class="compare-wrap">
+        <table class="compare">
+          <thead>
+            <tr><th>Mode</th><th>Latency</th><th>Interim words</th><th>Speaker labels</th><th>Language</th><th>Best for</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="pipe-badge mai sm">MAI</span></td>
+              <td>~8s windows</td><td>No</td><td>Off</td><td>Auto multilingual</td>
+              <td>Highest MAI accuracy, Hinglish</td>
+            </tr>
+            <tr>
+              <td><span class="pipe-badge standard sm">Standard</span></td>
+              <td>Instant</td><td>Yes</td><td>—</td><td>English-first</td>
+              <td>Live captions, dictation</td>
+            </tr>
+            <tr>
+              <td><span class="pipe-badge hybrid sm">Hybrid</span></td>
+              <td>Instant + final</td><td>Yes</td><td>Yes (final)</td><td>Live EN → MAI multilingual</td>
+              <td>Speed now, accuracy on stop</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="foot-note">
+        The <a href="index.html">Batch</a> tab remains the one-shot upload/record workflow with full MAI
+        diarization and click-to-seek playback. It is unchanged by these live pipelines.
+      </p>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh</span>
+  </footer>
+</body>
+</html>

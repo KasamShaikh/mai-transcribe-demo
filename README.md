@@ -13,6 +13,29 @@ project required: it runs against a plain **Azure Speech** (Cognitive Services) 
 - ⚡ Latency / real-time-factor meter
 - 🔑 Keyless auth via `DefaultAzureCredential` (managed identity in the cloud, `az login` locally)
 
+## Tabs
+The app has three pages (top navigation):
+
+- **Batch** (`index.html`) — the original one-shot flow: record or upload a file, then transcribe
+  with MAI-Transcribe-2 (diarization, keyword biasing, click-to-seek playback). **Unchanged.**
+- **Real time** (`realtime.html`) — live microphone transcription with three selectable pipelines.
+- **Way it works** (`how-it-works.html`) — a static explainer with flow diagrams, short code snippets,
+  and a comparison table for the three pipelines.
+
+## Real time pipelines
+The browser resamples the mic to **16 kHz mono PCM16** in an `AudioWorklet` and streams it over a
+WebSocket (`/ws/realtime`). Azure credentials stay on the server — **no token reaches the browser**.
+
+| Mode | How | Latency | Interim words | Speaker labels |
+|------|-----|---------|---------------|----------------|
+| **MAI Near-real-time** | Rolling ~8 s WAV windows → MAI-Transcribe-2 fast transcription | ~8 s | No | Off |
+| **Standard Realtime** | Azure Speech SDK continuous recognition (push stream) | Instant interim | Yes | — |
+| **Hybrid** | Standard interim live, then one full MAI pass replaces it on stop | Instant + final | Yes | Yes (final) |
+
+Standard/Hybrid use the Azure Speech SDK (`azure-cognitiveservices-speech`) with keyless
+`SpeechConfig(endpoint=…, token_credential=…)`. The browser needs a secure context — `localhost` or
+HTTPS — for microphone access, and Azure Container Apps ingress supports the WebSocket upgrade.
+
 ## How MAI-Transcribe-2 is selected
 The backend builds the fast-transcription `definition` and posts it to
 `{endpoint}/speechtotext/transcriptions:transcribe`:
@@ -75,11 +98,18 @@ az containerapp create -n <app> -g <rg> --environment <env> \
 
 ## Project layout
 ```
-app.py            FastAPI backend: keyless token + fast-transcription proxy + static hosting
-public/           Front-end (index.html, app.js, styles.css)
-Dockerfile        Container image (python:3.12-slim, uvicorn on :8000)
-requirements.txt  Python dependencies
-.env.example      Configuration template
+app.py             FastAPI backend: Batch fast-transcription proxy + static hosting (unchanged)
+mai_client.py      Isolated MAI fast-transcription client used by the Real time tab
+realtime.py        /ws/realtime WebSocket + the three live pipelines
+public/            Front-end
+  index.html, app.js, styles.css                  Batch tab (behavior unchanged)
+  realtime.html, realtime.js, realtime.css        Real time tab
+  pcm-capture-worklet.js                          16 kHz mic capture for the Real time tab
+  how-it-works.html, how-it-works.css             Way it works tab
+tests/             Batch regression + realtime unit/WebSocket tests
+Dockerfile         Container image (adds Speech SDK runtime libs; copies the new modules)
+requirements.txt   Python dependencies
+.env.example       Configuration template
 ```
 
 ## Notes
@@ -87,3 +117,7 @@ requirements.txt  Python dependencies
   usable confidence score, so the UI hides that field when it's absent.
 - Why not Azure Static Web Apps? The SWA `/api` route caps each request at **45 seconds**;
   transcription can take longer, so a container (ACA / App Service) is the better fit.
+- The **Real time** tab reuses the same Speech resource and keyless identity. MAI live is
+  *near*-real-time (its fast-transcription API is synchronous, so text refreshes every ~8 s);
+  **Standard** is the only true interim stream. MAI diarization needs the full recording, so it runs
+  in **Batch** and in **Hybrid**'s final pass — not in the rolling MAI windows.

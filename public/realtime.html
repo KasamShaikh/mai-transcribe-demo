@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAI-Transcribe-2 · Real time</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="realtime.css?v=1" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">MAI</div>
+      <div class="brand-text">
+        <h1>MAI-Transcribe-2</h1>
+        <p>Fast, multilingual speech transcription from Microsoft AI</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge badge-preview">Preview</span>
+      <span class="badge">Central India</span>
+      <span class="badge">Keyless · Entra ID</span>
+    </div>
+  </header>
+
+  <nav class="top-nav">
+    <a href="index.html">Batch</a>
+    <a href="realtime.html" class="active">Real time</a>
+    <a href="how-it-works.html">Way it works</a>
+  </nav>
+
+  <main class="layout">
+    <!-- ============ CONTROLS ============ -->
+    <section class="card panel-input">
+      <h2 class="card-title">1 · Pipeline</h2>
+      <div class="seg" id="rtModeSeg" role="tablist" aria-label="Realtime pipeline">
+        <button class="seg-btn active" data-mode="mai" type="button">MAI Near-real-time</button>
+        <button class="seg-btn" data-mode="standard" type="button">Standard Realtime</button>
+        <button class="seg-btn" data-mode="hybrid" type="button">Hybrid</button>
+      </div>
+      <p class="field-hint" id="rtHint"></p>
+
+      <h2 class="card-title mt">2 · Options</h2>
+      <div class="field">
+        <div class="field-row">
+          <span class="field-label">Keyword biasing (domain terms)</span>
+          <label class="switch">
+            <input type="checkbox" id="rtBiasing" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <textarea id="rtPhrases" class="phrases" rows="2" spellcheck="false">NEFT, RTGS, KYC, EMI, NIFTY, UPI, IFSC</textarea>
+        <p class="field-hint">Comma-separated. Boosts names, acronyms &amp; jargon.</p>
+      </div>
+
+      <div class="field" id="rtDiarField">
+        <div class="field-row">
+          <span class="field-label">Speaker labels</span>
+          <label class="switch">
+            <input type="checkbox" id="rtDiar" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="field-hint" id="rtDiarHint"></p>
+      </div>
+
+      <div class="rt-actions">
+        <button id="rtStart" class="primary-btn" type="button">
+          <span class="live-dot idle" style="position:static;margin:0"></span>
+          Start listening
+        </button>
+        <button id="rtStop" class="ghost-btn" type="button" disabled>Stop</button>
+      </div>
+
+      <div class="try-card">
+        <div class="try-label">Try saying (English + Hindi)</div>
+        <p class="try-line">“Namaste, main customer care se bol raha hoon. Aapka KYC pending hai — please NEFT se payment kar dijiye by Friday.”</p>
+      </div>
+    </section>
+
+    <!-- ============ LIVE OUTPUT ============ -->
+    <section class="card panel-output">
+      <div class="status-row">
+        <div class="status-left">
+          <span id="rtDot" class="live-dot idle"></span>
+          <span id="rtStatusText">Idle — pick a pipeline and press Start</span>
+        </div>
+        <div class="status-right">
+          <span id="rtStateChip" class="state-chip" hidden></span>
+          <span id="rtTimer" class="record-timer">00:00</span>
+        </div>
+      </div>
+
+      <div id="rtFlash" class="rt-flash" hidden></div>
+      <div id="rtSummary" class="transcript-summary" hidden></div>
+
+      <div id="rtScroll" class="rt-scroll">
+        <div id="rtEmpty" class="empty">
+          <div class="empty-icon"></div>
+          <p>Press <strong>Start listening</strong> and speak.<br />Live text appears here as you talk.</p>
+        </div>
+        <div id="rtOutput" class="transcript"></div>
+        <div id="rtInterim" class="interim" hidden></div>
+      </div>
+
+      <div id="rtFinalNote" class="bias-note" hidden></div>
+      <div id="rtError" class="error-box" hidden></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh</span>
+  </footer>
+
+  <script src="realtime.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+/* Way it works — static explainer styles. Shared tokens live in styles.css. */
+
+.how {
+  max-width: 980px; margin: 24px auto; padding: 0 24px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+.intro-card .lead { margin: 0 0 18px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+.intro-card .lead strong { color: var(--ink); }
+
+/* Flow diagram */
+.flow {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.flow.small { margin-top: 6px; }
+.flow-step {
+  padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center;
+  color: var(--ink); background: #f7f9fc; border: 1px solid var(--line); line-height: 1.35;
+}
+.flow-step small { display: block; font-weight: 500; font-size: 11px; color: var(--ink-mute); margin-top: 2px; }
+.flow-step.accent {
+  background: #fbeff4; border-color: #ecc6d8; color: var(--brand);
+}
+.flow-arrow { color: var(--brand-2); font-weight: 800; font-size: 18px; }
+.flow.labeled { display: block; }
+.flow-lane { margin-top: 10px; }
+.lane-tag {
+  display: inline-block; margin-bottom: 8px; font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.6px; color: var(--brand);
+}
+
+/* Pipeline card */
+.pipe-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.pipe-badge {
+  font-size: 13px; font-weight: 800; color: #fff; padding: 6px 12px; border-radius: 999px;
+  background: var(--brand);
+}
+.pipe-badge.sm { font-size: 11px; padding: 4px 10px; }
+.pipe-badge.mai { background: linear-gradient(135deg, #97144d, #cf1b6a); }
+.pipe-badge.standard { background: linear-gradient(135deg, #0a7d6b, #12a37f); }
+.pipe-badge.hybrid { background: linear-gradient(135deg, #6a3ac7, #b26a00); }
+.pipe-tag { font-size: 12px; font-weight: 700; color: var(--ink-mute); }
+.pipe-summary { margin: 0 0 16px; font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
+.pipe-summary strong { color: var(--ink); }
+
+/* Code snippet */
+.snippet {
+  margin: 16px 0 0; padding: 14px 16px; border-radius: 8px; overflow-x: auto;
+  background: #241820; border: 1px solid #3a2a32;
+}
+.snippet code {
+  font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 12.5px; line-height: 1.65; color: #f3e3ea; white-space: pre;
+}
+
+/* Characteristics */
+.chars {
+  list-style: none; margin: 16px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px;
+}
+.chars li { font-size: 13px; color: var(--ink-soft); }
+.chars b { color: var(--brand); font-weight: 700; margin-right: 4px; }
+
+/* Comparison table */
+.compare-wrap { overflow-x: auto; }
+.compare { width: 100%; border-collapse: collapse; font-size: 13px; }
+.compare th, .compare td {
+  text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: middle;
+}
+.compare thead th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-mute);
+  background: #faf1f5;
+}
+.compare tbody tr:hover { background: #fbfafc; }
+.foot-note { margin: 16px 0 0; font-size: 13px; color: var(--ink-mute); line-height: 1.6; }
+.foot-note a { color: var(--brand); font-weight: 700; }
+
+@media (max-width: 620px) {
+  .chars { grid-template-columns: 1fr; }
+  .flow-arrow { transform: rotate(90deg); }
+}

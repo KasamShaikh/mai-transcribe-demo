@@ -184,4 +184,12 @@ async def health():
     return {"ok": True, "endpoint": ENDPOINT, "apiVersion": API_VERSION}
 
 
+# ---- REAL TIME TAB (additive, isolated) --------------------------------------
+# Imported here, after load_dotenv() has run, so the realtime module sees the
+# same SPEECH_ENDPOINT env. The existing routes above are unchanged.
+from realtime import router as realtime_router  # noqa: E402
+
+app.include_router(realtime_router)
+
+
 app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="static")
