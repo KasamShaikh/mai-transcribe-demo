@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <link rel="stylesheet" href="how-it-works.css?v=1" />
 </head>
 <body>
@@ -177,7 +177,7 @@ await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code><
     <section class="card pipe">
       <div class="pipe-head">
         <span class="pipe-badge hybrid">End of call</span>
-        <span class="pipe-tag">English transcript + summary · planned</span>
+        <span class="pipe-tag">English transcript + summary</span>
       </div>
       <p class="pipe-summary">
         Live and batch transcripts keep every word in the language it was spoken (English, Hindi, Marathi…).
@@ -196,14 +196,15 @@ await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code><
         <span class="flow-arrow">→</span>
         <span class="flow-step">English transcript<br />+ Summary</span>
       </div>
-      <pre class="snippet"><code># planned — realtime.py, after the last transcript event and before "done"
-english = await english_summary.summarize_to_english(final_phrases)
-await emit({"type": "english", "transcript": english["englishTranscript"], "summary": english["summary"]})
-await emit({"type": "done"})</code></pre>
+      <pre class="snippet"><code>      # realtime.py — after the last transcript event and before "done"
+      text = collector.text()
+      english = await english_summary.summarize_to_english(text)
+      put({"type": "english", "transcript": english["englishTranscript"], "summary": english["summary"]})</code></pre>
       <ul class="chars">
         <li><b>When</b> once, after Stop (Hybrid: after the MAI replacement)</li>
         <li><b>Where</b> Real time (all modes) and Batch</li>
         <li><b>Auth</b> keyless · managed identity</li>
+        <li><b>Model</b> Azure OpenAI gpt-4.1-mini (South India, Standard)</li>
         <li><b>Failure</b> non-fatal; original transcript is kept</li>
       </ul>
     </section>
@@ -237,8 +238,8 @@ await emit({"type": "done"})</code></pre>
       </div>
       <p class="foot-note">
         The <a href="index.html">Batch</a> tab remains the one-shot upload/record workflow with full MAI
-        diarization and click-to-seek playback. It will also offer the optional English transcript and summary
-        after transcription completes.
+        diarization and click-to-seek playback. After transcription completes it also shows the English transcript
+                and summary (via <code>/api/english</code>).
       </p>
     </section>
   </main>

@@ -8,6 +8,7 @@ import io
 from fastapi.testclient import TestClient
 
 import app as appmod
+import english_summary
 import mai_client
 import realtime
 from realtime import MaiRollingBuffer, filter_new_phrases, parse_config
@@ -122,6 +123,56 @@ class TestMaiWebSocket(unittest.TestCase):
                     self.assertIn("chunk", types)
         finally:
             mai_client.transcribe_wav = original
+
+    def test_english_event_precedes_done(self):
+        canned = {"phrases": [{"text": "das hazar ka stock kal", "locale": "hi-IN"}]}
+
+        async def fake_transcribe(wav_bytes, definition, timeout=120):
+            return canned
+
+        async def fake_summarize(text, timeout=60.0):
+            self.assertIn("das hazar", text)
+            return {"englishTranscript": "ten thousand stock tomorrow", "summary": "Will buy stock tomorrow."}
+
+        orig_t, orig_s, orig_c = (mai_client.transcribe_wav, english_summary.summarize_to_english,
+                                  english_summary.is_configured)
+        mai_client.transcribe_wav = fake_transcribe
+        english_summary.summarize_to_english = fake_summarize
+        english_summary.is_configured = lambda: True
+        try:
+            with TestClient(appmod.app) as client:
+                with client.websocket_connect("/ws/realtime") as ws:
+                    ws.send_text(json.dumps({"type": "config", "mode": "mai", "biasing": False}))
+                    ws.receive_json()
+                    ws.send_bytes(b"\x00\x00" * (8000 * realtime.SAMPLE_RATE // 1000))
+                    ws.send_text(json.dumps({"type": "stop"}))
+                    events = []
+                    while True:
+                        ev = ws.receive_json()
+                        events.append(ev)
+                        if ev["type"] == "done":
+                            break
+            types = [e["type"] for e in events]
+            self.assertLess(types.index("english"), types.index("done"))
+            eng = next(e for e in events if e["type"] == "english")
+            self.assertEqual(eng["summary"], "Will buy stock tomorrow.")
+        finally:
+            mai_client.transcribe_wav, english_summary.summarize_to_english, english_summary.is_configured = (
+                orig_t, orig_s, orig_c)
+
+
+class TestEnglishSummaryHelpers(unittest.TestCase):
+    def test_collector_replacement_overrides_live(self):
+        c = english_summary.TranscriptCollector()
+        c.add({"type": "final", "text": "live text"})
+        c.add({"type": "replacement", "result": {"phrases": [{"text": "clean", "speaker": 0}]}})
+        self.assertEqual(c.text(), "Speaker 1: clean")
+
+    def test_parse_requires_fields(self):
+        with self.assertRaises(english_summary.EnglishSummaryError):
+            english_summary._parse('{"summary": "x"}')
+        out = english_summary._parse('{"englishTranscript": "a", "summary": "b"}')
+        self.assertEqual(out["summary"], "b")
 
 
 if __name__ == "__main__":

@@ -73,6 +73,7 @@ async function transcribe() {
   setBusy(true);
   hide("errorBox");
   hide("biasNote");
+  hide("englishBox");
 
   // The MAI-transcribe backend decodes with libsndfile, which rejects WebM/Opus.
   // Convert whatever we captured to 16 kHz mono WAV in the browser first.
@@ -100,6 +101,7 @@ async function transcribe() {
       return;
     }
     render(data);
+    loadEnglish(data);
   } catch (e) {
     showError("Could not reach the backend. Is the server running?");
   } finally {
@@ -112,6 +114,33 @@ function setBusy(busy) {
   document.querySelector(".btn-spinner").hidden = !busy;
   document.querySelector(".btn-label").textContent = busy ? "Transcribing\u2026" : "Transcribe";
 }
+
+/* ---------------- English transcript + summary (after the call) ---------------- */
+async function loadEnglish(data) {
+  const phrases = (data.phrases && data.phrases.length)
+    ? data.phrases
+    : [{ text: data.combinedText }];
+  const box = $("englishBox");
+  box.hidden = false;
+  $("englishSummary").textContent = "Generating English transcript & summary\u2026";
+  $("englishText").textContent = "";
+  try {
+    const res = await fetch("/api/english", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phrases: phrases.map((p) => ({ text: p.text, speaker: p.speaker })) }),
+    });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.detail || "failed");
+    $("englishSummary").textContent = out.summary;
+    $("englishText").textContent = out.englishTranscript;
+  } catch (e) {
+    box.hidden = true;
+  }
+}
+$("copyEnglish").addEventListener("click", () => {
+  navigator.clipboard.writeText(`Summary:\n${$("englishSummary").textContent}\n\nEnglish transcript:\n${$("englishText").textContent}`);
+});
 
 /* ---------------- Render ---------------- */
 const LANG_NAMES = { en: "English", hi: "Hindi", mr: "Marathi", ta: "Tamil", te: "Telugu", bn: "Bengali", gu: "Gujarati", kn: "Kannada", pa: "Punjabi", ur: "Urdu", de: "German", fr: "French", es: "Spanish", ja: "Japanese", zh: "Chinese" };

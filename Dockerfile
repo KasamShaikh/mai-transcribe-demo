@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 COPY mai_client.py .
+COPY english_summary.py .
 COPY realtime.py .
 COPY public ./public
 

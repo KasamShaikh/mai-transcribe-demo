@@ -232,6 +232,14 @@ body {
   background: rgba(151, 20, 77, 0.06); border: 1px solid rgba(151, 20, 77, 0.22); color: var(--ink-soft);
 }
 .bias-note b { color: var(--brand); }
+.english-card {
+  margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--card); border: 1px solid var(--line); color: var(--ink);
+}
+.english-card h3 { margin: 0 0 6px; font-size: 13px; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
+.english-head { display: flex; align-items: center; justify-content: space-between; }
+.english-summary { margin: 0 0 14px; font-size: 14px; line-height: 1.5; }
+.english-text { font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; color: var(--ink-soft); }
 .error-box {
   margin-top: 16px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px;
   background: rgba(255, 93, 108, 0.1); border: 1px solid rgba(255, 93, 108, 0.35); color: #ffb3bb;

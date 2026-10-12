@@ -16,6 +16,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, WebSocket
 
+import english_summary
 import mai_client
 from mai_client import ENDPOINT, SAMPLE_RATE, _credential
 
@@ -145,14 +146,21 @@ async def realtime_ws(ws: WebSocket) -> None:
     loop = asyncio.get_running_loop()
     out_q: asyncio.Queue = asyncio.Queue()
     sender = asyncio.create_task(_sender(ws, out_q))
+    collector = english_summary.TranscriptCollector()
+
+    def put(ev: dict) -> None:
+        collector.add(ev)
+        out_q.put_nowait(ev)
 
     async def emit(ev: dict) -> None:
-        await out_q.put(ev)
+        if ev.get("type") == "done":
+            await _emit_english(put, collector)
+        put(ev)
 
     def emit_ts(ev: dict) -> None:
         """Thread-safe emit for Speech SDK callback threads."""
         try:
-            loop.call_soon_threadsafe(out_q.put_nowait, ev)
+            loop.call_soon_threadsafe(put, ev)
         except RuntimeError:
             pass
 
@@ -180,6 +188,22 @@ async def realtime_ws(ws: WebSocket) -> None:
     await out_q.put(None)
     await sender
     await _safe_close(ws)
+
+
+async def _emit_english(put, collector) -> None:
+    """Translate + summarize the final transcript once, just before `done`."""
+    text = collector.text()
+    if not text or not english_summary.is_configured():
+        return
+    put({"type": "status", "state": "summarizing"})
+    try:
+        result = await english_summary.summarize_to_english(text)
+    except Exception:
+        put({"type": "error", "recoverable": True,
+             "message": "Could not generate the English transcript and summary."})
+        return
+    put({"type": "english", "transcript": result["englishTranscript"],
+         "summary": result["summary"]})
 
 
 async def _safe_close(ws: WebSocket) -> None:

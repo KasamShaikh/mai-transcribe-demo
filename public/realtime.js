@@ -148,6 +148,7 @@ function handleEvent(ev) {
     case "final": commitLine(ev); setInterim(""); break;
     case "chunk": (ev.phrases || []).forEach(commitLine); break;
     case "replacement": renderFinal(ev.result); break;
+    case "english": renderEnglish(ev); break;
     case "error": onError(ev); break;
     case "done": finish(); break;
   }
@@ -167,6 +168,13 @@ function onReady() {
 function onStatus(ev) {
   if (ev.state === "processing") setStatus("live", "Listening… (transcribing window)");
   else if (ev.state === "finalizing") setStatus("finishing", "Finalizing with MAI-Transcribe-2…");
+  else if (ev.state === "summarizing") setStatus("finishing", "Generating English transcript & summary…");
+}
+
+function renderEnglish(ev) {
+  $("#rtEnglishSummary").textContent = ev.summary || "";
+  $("#rtEnglishText").textContent = ev.transcript || "";
+  show("#rtEnglish");
 }
 
 function onError(ev) {
@@ -216,6 +224,7 @@ function resetOutput() {
   $("#rtSummary").hidden = true;
   setInterim("");
   $("#rtFinalNote").hidden = true;
+  $("#rtEnglish").hidden = true;
   $("#rtStateChip").hidden = true;
   hide("#rtEmpty");
 }
@@ -328,6 +337,9 @@ document.querySelectorAll("#rtModeSeg .seg-btn").forEach((b) =>
 );
 $("#rtStart").addEventListener("click", start);
 $("#rtStop").addEventListener("click", stop);
+$("#rtCopyEnglish").addEventListener("click", () => {
+  navigator.clipboard.writeText(`Summary:\n${$("#rtEnglishSummary").textContent}\n\nEnglish transcript:\n${$("#rtEnglishText").textContent}`);
+});
 window.addEventListener("pagehide", cleanup);
 window.addEventListener("beforeunload", cleanup);
 selectMode("mai");

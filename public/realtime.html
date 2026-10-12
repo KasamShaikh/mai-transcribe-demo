@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <link rel="stylesheet" href="realtime.css?v=1" />
 </head>
 <body>
@@ -107,6 +107,15 @@
       </div>
 
       <div id="rtFinalNote" class="bias-note" hidden></div>
+      <div id="rtEnglish" class="english-card" hidden>
+        <div class="english-head">
+          <h3>Summary</h3>
+          <button id="rtCopyEnglish" class="ghost-btn" type="button">Copy</button>
+        </div>
+        <p id="rtEnglishSummary" class="english-summary"></p>
+        <h3>English transcript</h3>
+        <div id="rtEnglishText" class="english-text"></div>
+      </div>
       <div id="rtError" class="error-box" hidden></div>
     </section>
   </main>
@@ -115,6 +124,6 @@
     <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh</span>
   </footer>
 
-  <script src="realtime.js?v=1"></script>
+  <script src="realtime.js?v=2"></script>
 </body>
 </html>

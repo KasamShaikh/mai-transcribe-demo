@@ -67,7 +67,14 @@ Open <http://127.0.0.1:8000>.
 ```
 SPEECH_ENDPOINT=https://<your-speech-resource>.cognitiveservices.azure.com
 SPEECH_API_VERSION=2025-10-15
+# Optional: English transcript + summary at the end of a call (Azure OpenAI, keyless;
+# identity needs "Cognitive Services OpenAI User" on that resource)
+AOAI_ENDPOINT=https://<your-openai-resource>.openai.azure.com
+AOAI_DEPLOYMENT=gpt-4-1-mini
 ```
+
+When `AOAI_*` is set, every call (Real time in all modes, and Batch) ends with a full English
+transcript (Hindi/Marathi translated) and a short summary. If unset, the feature is skipped.
 
 ## Deploy to Azure Container Apps
 Build the image remotely and deploy with a **user-assigned managed identity** (replace every

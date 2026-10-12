@@ -179,6 +179,22 @@ async def transcribe(
     return result
 
 
+@app.post("/api/english")
+async def english(payload: dict):
+    """English transcript + summary for a finished (batch) transcript."""
+    import english_summary
+
+    text = english_summary.phrases_to_text(payload.get("phrases") or [])
+    if not text:
+        raise HTTPException(status_code=400, detail="No transcript text provided.")
+    if not english_summary.is_configured():
+        raise HTTPException(status_code=503, detail="English summary is not configured.")
+    try:
+        return await english_summary.summarize_to_english(text)
+    except english_summary.EnglishSummaryError:
+        raise HTTPException(status_code=502, detail="Could not generate the English transcript and summary.")
+
+
 @app.get("/api/health")
 async def health():
     return {"ok": True, "endpoint": ENDPOINT, "apiVersion": API_VERSION}
