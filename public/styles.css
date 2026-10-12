@@ -6,13 +6,52 @@
   --ink-soft: #5a4650;
   --ink-mute: #8a7a82;
   --line: #ecdfe5;
-  --brand: #97144d;        /* Axis Bank burgundy */
-  --brand-2: #cf1b6a;      /* Axis magenta accent */
+  --brand: #97144d;        /* Classic: Axis burgundy */
+  --brand-2: #cf1b6a;      /* Classic: magenta accent */
+  --brand-rgb: 151, 20, 77;
   --accent: #b26a00;       /* warm gold for the speed highlight */
   --danger: #dc3545;
   --radius: 8px;
   --radius-sm: 7px;
-  --shadow: 0 8px 28px rgba(151, 20, 77, 0.10);
+  --shadow: 0 8px 28px rgba(var(--brand-rgb), 0.10);
+  /* Soft brand tints used for chips, hovers and highlights */
+  --tint: #fbeff4;
+  --tint-2: #f4e9ef;
+  --tint-hover: #faf1f5;
+  --tint-active: #fbeef3;
+  --tint-line: #ecc6d8;
+  --tint-strong: #f3e1ea;
+  --tint-text: #7a0f3e;
+  --other-bg: #f7e0ee;
+  --other-fg: #a3186b;
+  --code-bg: #241820;
+  --code-line: #3a2a32;
+  --code-fg: #f3e3ea;
+}
+
+/* Copilot / Cowork theme (default): clean white, soft purple-blue */
+html[data-theme="copilot"] {
+  --bg: #f5f5fb;
+  --ink: #1f1f2e;
+  --ink-soft: #464662;
+  --ink-mute: #7a7a96;
+  --line: #e2e2f0;
+  --brand: #5b5fc7;
+  --brand-2: #7f6af0;
+  --brand-rgb: 91, 95, 199;
+  --shadow: 0 8px 28px rgba(var(--brand-rgb), 0.12);
+  --tint: #eeeefb;
+  --tint-2: #ebecf8;
+  --tint-hover: #f1f1fb;
+  --tint-active: #ebebfa;
+  --tint-line: #cfd0f0;
+  --tint-strong: #e4e5f8;
+  --tint-text: #3b3d9a;
+  --other-bg: #e9e3fb;
+  --other-fg: #5b3fc4;
+  --code-bg: #1f1f2e;
+  --code-line: #34344a;
+  --code-fg: #e8e8f6;
 }
 
 * { box-sizing: border-box; }
@@ -23,8 +62,8 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--ink);
   background:
-    linear-gradient(rgba(151, 20, 77, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(151, 20, 77, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(var(--brand-rgb), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--brand-rgb), 0.05) 1px, transparent 1px),
     var(--bg);
   background-size: 28px 28px;
   min-height: 100vh;
@@ -43,7 +82,7 @@ body {
   display: grid; place-items: center;
   font-weight: 800; font-size: 18px; letter-spacing: 0; color: #fff;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.28);
 }
 .brand-text h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0; }
 .brand-text p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13px; }
@@ -126,8 +165,8 @@ body {
 
 .model-selection {
   display: flex; align-items: center; gap: 9px; margin-top: 8px; min-height: 42px;
-  padding: 9px 11px; border: 1px solid #ecc6d8; border-radius: var(--radius-sm);
-  background: #fbeff4; color: #7a0f3e; font-size: 13px; font-weight: 700;
+  padding: 9px 11px; border: 1px solid var(--tint-line); border-radius: var(--radius-sm);
+  background: var(--tint); color: var(--tint-text); font-size: 13px; font-weight: 700;
 }
 .model-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
 .model-status { margin-left: auto; color: var(--brand); font-size: 11px; text-transform: uppercase; }
@@ -160,7 +199,7 @@ body {
   border-radius: 7px; font-weight: 700; font-size: 15px; color: #fff; font-family: inherit;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  transition: transform 0.12s, opacity 0.2s; box-shadow: 0 6px 16px rgba(151, 20, 77, 0.25);
+  transition: transform 0.12s, opacity 0.2s; box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.3);
 }
 .primary-btn:hover:not(:disabled) { transform: translateY(-1px); }
 .primary-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
@@ -206,14 +245,14 @@ body {
 .phrase.turn {
   display: flex; gap: 8px; align-items: baseline; border-bottom: none; padding: 5px 8px;
 }
-.phrase:hover { background: #faf1f5; }
-.phrase.active { background: #fbeef3; border-bottom-color: transparent; }
+.phrase:hover { background: var(--tint-hover); }
+.phrase.active { background: var(--tint-active); border-bottom-color: transparent; }
 .turn-speaker { flex: none; font-weight: 800; color: var(--brand); white-space: nowrap; }
 .turn-body { flex: 1; min-width: 0; }
 .transcript-summary {
   display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; padding: 10px 14px;
   border: 1px solid var(--line); border-left: 3px solid var(--brand);
-  border-radius: var(--radius-sm); background: #fbeff4;
+  border-radius: var(--radius-sm); background: var(--tint);
 }
 .summary-item { display: flex; flex-direction: column; gap: 2px; }
 .summary-k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--brand); font-weight: 800; }
@@ -223,13 +262,13 @@ body {
   letter-spacing: 0.5px; padding: 1px 6px; border-radius: 5px; margin-right: 5px;
   vertical-align: middle; transform: translateY(-1px);
 }
-.lang-en { background: #f3e1ea; color: #7a0f3e; }
+.lang-en { background: var(--tint-strong); color: var(--tint-text); }
 .lang-hi { background: #fdeecf; color: #8a5a06; }
-.lang-other { background: #f7e0ee; color: #a3186b; }
+.lang-other { background: var(--other-bg); color: var(--other-fg); }
 
 .bias-note {
   margin-top: 16px; padding: 11px 13px; border-radius: var(--radius-sm); font-size: 12.5px;
-  background: rgba(151, 20, 77, 0.06); border: 1px solid rgba(151, 20, 77, 0.22); color: var(--ink-soft);
+  background: rgba(var(--brand-rgb), 0.07); border: 1px solid rgba(var(--brand-rgb), 0.25); color: var(--ink-soft);
 }
 .bias-note b { color: var(--brand); }
 .english-card {
@@ -260,6 +299,20 @@ body {
 }
 .top-nav a:hover { color: var(--brand); border-color: var(--brand); }
 .top-nav a.signout { margin-left: auto; }
+
+/* Floating theme switch (Classic burgundy <-> Copilot purple), added by theme.js */
+.theme-toggle {
+  position: fixed; right: 16px; bottom: 16px; z-index: 50;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  font: 700 12.5px "Manrope", sans-serif; color: var(--ink-soft);
+  background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.theme-toggle:hover { color: var(--brand); border-color: var(--brand); }
+.theme-toggle .swatch {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
 .top-nav a.active {
   color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent;
 }
