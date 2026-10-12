@@ -145,6 +145,13 @@ $("copyEnglish").addEventListener("click", () => {
 /* ---------------- Render ---------------- */
 const LANG_NAMES = { en: "English", hi: "Hindi", mr: "Marathi", ta: "Tamil", te: "Telugu", bn: "Bengali", gu: "Gujarati", kn: "Kannada", pa: "Punjabi", ur: "Urdu", de: "German", fr: "French", es: "Spanish", ja: "Japanese", zh: "Chinese" };
 
+/* Full language name for any code (MAI supports 60 languages) via the browser's built-in names. */
+function displayLang(code) {
+  if (!code) return "unknown";
+  try { return new Intl.DisplayNames(["en"], { type: "language" }).of(code) || code.toUpperCase(); }
+  catch (e) { return code.toUpperCase(); }
+}
+
 function langClass(locale) {
   const base = (locale || "").toLowerCase().split("-")[0];
   if (base === "en") return "lang-en";
@@ -157,7 +164,7 @@ function langLabel(locale) {
 }
 function langName(locale) {
   const base = (locale || "").toLowerCase().split("-")[0];
-  return LANG_NAMES[base] || (base ? base.toUpperCase() : "unknown");
+  return LANG_NAMES[base] || displayLang(base);
 }
 
 function render(data) {

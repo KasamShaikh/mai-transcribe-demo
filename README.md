@@ -7,7 +7,7 @@ project required: it runs against a plain **Azure Speech** (Cognitive Services) 
 
 ## Features
 - 🎙️ Record from the mic or upload `WAV / MP3 / M4A / WebM / OGG / FLAC`
-- 🌐 Automatic multilingual detection (e.g. English + Hindi + Marathi) with a per-line language tag
+- 🌐 Automatic language detection across MAI-Transcribe-2's 60 languages, including mixed-language speech (e.g. English + Hindi + Marathi), with a per-line language tag
 - 🗣️ Speaker diarization — `Speaker 1 :- …` conversation view
 - 🎯 Keyword biasing for domain terms (NEFT, KYC, …)
 - ⚡ Latency / real-time-factor meter
@@ -74,7 +74,7 @@ AOAI_DEPLOYMENT=gpt-4-1-mini
 ```
 
 When `AOAI_*` is set, every call (Real time in all modes, and Batch) ends with a full English
-transcript (Hindi/Marathi translated) and a short summary. If unset, the feature is skipped.
+transcript (any non-English speech translated) and a short summary. If unset, the feature is skipped.
 
 ### Login
 The whole app (pages, APIs and the live WebSocket) sits behind a sign-in page. Credentials are

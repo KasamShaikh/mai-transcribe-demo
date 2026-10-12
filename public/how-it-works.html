@@ -181,10 +181,11 @@ await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code><
         <span class="pipe-tag">English transcript + summary</span>
       </div>
       <p class="pipe-summary">
-        Live and batch transcripts keep every word in the language it was spoken (English, Hindi, Marathi…).
+        Live and batch transcripts keep every word in the language it was spoken (MAI-Transcribe-2 supports 60
+        languages, e.g. English, Hindi, Marathi, with automatic detection and code-switching).
         When the call ends, the final transcript is sent <strong>once</strong> to an
         <strong>Azure OpenAI</strong> chat deployment, which returns two extra outputs: a
-        <strong>full English transcript</strong> (Hindi/Marathi translated by meaning, speaker labels kept) and a
+        <strong>full English transcript</strong> (any non-English speech translated by meaning, speaker labels kept) and a
         <strong>short summary</strong>. For example, <em>"I am buying das hazar ka stock kal"</em> becomes
         <em>"I will buy ten thousand rupees' worth of stock tomorrow."</em> The original transcript is never modified.
       </p>

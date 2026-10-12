@@ -20,8 +20,9 @@ MAX_INPUT_CHARS = 30000     # cap on transcript size sent to the model
 
 # Instructions that make the model translate by meaning and summarize, returning JSON only.
 SYSTEM_PROMPT = (
-    "You process call transcripts that mix English, Hindi, Marathi and other Indian languages "
-    "(often romanized, e.g. 'das hazar ka stock kal'). Return JSON with exactly two keys:\n"
+    "You process call transcripts that may be in any language or mix several (for example English, "
+    "Hindi, Marathi or any other language, often romanized, e.g. 'das hazar ka stock kal'). "
+    "Return JSON with exactly two keys:\n"
     "\"englishTranscript\": the whole conversation translated into natural, fluent English, one "
     "line per input line, keeping any 'Speaker N:' prefixes. Translate by meaning, convert "
     "numbers/amounts (e.g. 'das hazar' -> 'ten thousand') and relative time words (kal -> "

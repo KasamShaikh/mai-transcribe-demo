@@ -302,6 +302,12 @@ function startTimer() {
 }
 function stopTimer() { clearInterval(state.timer); }
 
+/* Full language name for any code (MAI supports 60 languages) via the browser's built-in names. */
+function displayLang(code) {
+  if (!code) return "unknown";
+  try { return new Intl.DisplayNames(["en"], { type: "language" }).of(code) || code.toUpperCase(); }
+  catch (e) { return code.toUpperCase(); }
+}
 function langClass(locale) {
   const b = (locale || "").toLowerCase().split("-")[0];
   if (b === "en") return "lang-en";
@@ -311,7 +317,7 @@ function langClass(locale) {
 function langLabel(locale) { return ((locale || "").toLowerCase().split("-")[0] || "?").toUpperCase(); }
 function langName(locale) {
   const b = (locale || "").toLowerCase().split("-")[0];
-  return LANG_NAMES[b] || (b ? b.toUpperCase() : "unknown");
+  return LANG_NAMES[b] || displayLang(b);
 }
 function scrollOutput() {
   const box = $("#rtScroll");
