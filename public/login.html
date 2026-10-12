@@ -7,72 +7,81 @@
   <title>Sign in · MAI-Transcribe-2</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=9" />
-  <link rel="stylesheet" href="login.css?v=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="login.css?v=2" />
 </head>
 <body class="login-page">
-  <header class="app-header">
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M11 3h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm-6 6h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Zm12 0h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1ZM3 15h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-2Z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0 2c4.4 0 8 2.2 8 5v3H4v-3c0-2.8 3.6-5 8-5Z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm-1.2 13.6 6.4-6.4-1.4-1.4-5 5-2.6-2.6-1.4 1.4 4 4Z"/></symbol>
+  </svg>
+
+  <div class="utilitybar">
+    <span class="utility-section">Speech · Live demo</span>
+    <span class="utility-note">Keyless · Entra ID</span>
+  </div>
+
+  <header class="topbar">
     <div class="brand">
-      <div class="brand-mark">MAI</div>
-      <div class="brand-text">
-        <h1>MAI-Transcribe-2</h1>
-        <p>Fast, multilingual speech transcription from Microsoft AI</p>
+      <span class="mark" aria-hidden="true"><svg><use href="#i-mark"/></svg></span>
+      <div>
+        <p class="brand-name">MAI-Transcribe-2</p>
+        <p class="brand-sub">Multilingual speech transcription · Microsoft AI</p>
       </div>
     </div>
-    <div class="badges">
-      <span class="badge badge-preview">Preview</span>
-      <span class="badge">Keyless · Entra ID</span>
-    </div>
+    <span class="topbar-note">Secure access</span>
   </header>
 
   <div class="login-shell">
     <aside class="login-hero">
-      <p class="eyebrow">Speech · Live demo</p>
-      <h2>Every word, in the language it was spoken. <em>Plus a clear English summary.</em></h2>
-      <p class="hero-lead">
-        Transcribe calls in <strong>60 languages</strong> with automatic language detection and mixed-language
-        (code-switched) speech such as Hinglish, then get a full English transcript and a short summary at the
-        end of the call.
-      </p>
-      <ul class="hero-points">
-        <li>60 languages, auto-detected, with mixed-language speech</li>
-        <li>Three live pipelines: MAI, Standard and Hybrid</li>
-        <li>Speaker labels and keyword biasing</li>
-        <li>English transcript and summary after every call</li>
-      </ul>
+      <p class="eyebrow">Speech · Real-world calls</p>
+      <div>
+        <h2>Every word, in the language it was spoken. <em>Then a clear English summary.</em></h2>
+        <p class="hero-lead">
+          Transcribe live and recorded calls across 60 languages, including mixed-language speech such as
+          Hinglish, and get a full English transcript and a short summary when the call ends.
+        </p>
+        <ul class="hero-points">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Automatic language detection</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Live captions, near-real-time and hybrid modes</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Speaker labels and keyword biasing</li>
+        </ul>
+      </div>
       <p class="hero-foot">Proof of concept · For authorised users</p>
     </aside>
 
     <main class="login-main">
-      <section class="card login-card" aria-labelledby="login-title">
-        <h2 id="login-title" class="card-title">Sign in</h2>
+      <section class="login-card" aria-labelledby="login-title">
+        <h1 id="login-title">Sign in</h1>
         <p class="login-intro">Use the credentials shared with you for this demo.</p>
-        <form id="loginForm" novalidate>
-          <label for="username" class="field-label">Username</label>
-          <input id="username" name="username" type="text" class="login-input"
-                 autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="64" required />
+        <form id="loginForm" class="login-form" novalidate>
+          <label for="username">Username</label>
+          <div class="field">
+            <svg class="ic" aria-hidden="true"><use href="#i-user"/></svg>
+            <input id="username" name="username" type="text" autocomplete="username"
+                   autocapitalize="none" spellcheck="false" maxlength="64" required />
+          </div>
 
-          <label for="password" class="field-label">Password</label>
-          <div class="pw-wrap">
-            <input id="password" name="password" type="password" class="login-input"
-                   autocomplete="current-password" maxlength="128" required />
-            <button id="togglePw" class="pw-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          <label for="password">Password</label>
+          <div class="field">
+            <svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>
+            <input id="password" name="password" type="password" autocomplete="current-password"
+                   maxlength="128" required />
+            <button id="togglePw" class="reveal" type="button" aria-label="Show password" aria-pressed="false">Show</button>
           </div>
 
           <p id="loginError" class="login-error" role="alert" hidden></p>
-          <button id="loginBtn" class="primary-btn" type="submit">
-            <span class="btn-label">Sign in</span>
-            <span class="btn-spinner" hidden></span>
-          </button>
+          <button id="loginBtn" class="btn-primary" type="submit">Sign in</button>
         </form>
-        <p class="login-note">Authorised users only.</p>
+        <p class="login-note"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Authorised users only.</p>
       </section>
     </main>
   </div>
 
-  <footer class="app-footer">
-    <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh</span>
+  <footer class="login-footer">
+    MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh
   </footer>
 
   <script>
@@ -101,7 +110,7 @@
         return;
       }
       btn.disabled = true;
-      btn.querySelector(".btn-spinner").hidden = false;
+      btn.textContent = "Signing in…";
       try {
         const res = await fetch("/api/login", {
           method: "POST",
@@ -117,7 +126,7 @@
         errBox.hidden = false;
       } finally {
         btn.disabled = false;
-        btn.querySelector(".btn-spinner").hidden = true;
+        btn.textContent = "Sign in";
       }
     });
   </script>
