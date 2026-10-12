@@ -206,8 +206,13 @@ async def health():
 # Imported here, after load_dotenv() has run, so the realtime module sees the
 # same SPEECH_ENDPOINT env. The existing routes above are unchanged.
 from realtime import router as realtime_router  # noqa: E402
+import auth  # noqa: E402
 
 app.include_router(realtime_router)
+
+# ---- LOGIN GATE: every page/API/WebSocket requires a session except the login page ----
+app.include_router(auth.router)
+app.add_middleware(auth.AuthMiddleware)
 
 
 app.mount("/", StaticFiles(directory=str(PUBLIC_DIR), html=True), name="static")

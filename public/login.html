@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sign in · MAI-Transcribe-2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="login.css?v=1" />
+</head>
+<body class="login-page">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">MAI</div>
+      <div class="brand-text">
+        <h1>MAI-Transcribe-2</h1>
+        <p>Fast, multilingual speech transcription from Microsoft AI</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge badge-preview">Preview</span>
+      <span class="badge">Keyless · Entra ID</span>
+    </div>
+  </header>
+
+  <div class="login-shell">
+    <aside class="login-hero">
+      <p class="eyebrow">Speech · Live demo</p>
+      <h2>Every word, in the language it was spoken. <em>Plus a clear English summary.</em></h2>
+      <p class="hero-lead">
+        Transcribe English, Hindi and Marathi calls live, then get a full English transcript and
+        a short summary at the end of the call.
+      </p>
+      <ul class="hero-points">
+        <li>Three live pipelines: MAI, Standard and Hybrid</li>
+        <li>Speaker labels and keyword biasing</li>
+        <li>English transcript and summary after every call</li>
+      </ul>
+      <p class="hero-foot">Proof of concept · For authorised users</p>
+    </aside>
+
+    <main class="login-main">
+      <section class="card login-card" aria-labelledby="login-title">
+        <h2 id="login-title" class="card-title">Sign in</h2>
+        <p class="login-intro">Use the credentials shared with you for this demo.</p>
+        <form id="loginForm" novalidate>
+          <label for="username" class="field-label">Username</label>
+          <input id="username" name="username" type="text" class="login-input"
+                 autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="64" required />
+
+          <label for="password" class="field-label">Password</label>
+          <div class="pw-wrap">
+            <input id="password" name="password" type="password" class="login-input"
+                   autocomplete="current-password" maxlength="128" required />
+            <button id="togglePw" class="pw-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+
+          <p id="loginError" class="login-error" role="alert" hidden></p>
+          <button id="loginBtn" class="primary-btn" type="submit">
+            <span class="btn-label">Sign in</span>
+            <span class="btn-spinner" hidden></span>
+          </button>
+        </form>
+        <p class="login-note">Authorised users only.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <span>MAI-Transcribe-2 capability demo · Azure Speech · Keyless authentication · Made by Kasam Shaikh</span>
+  </footer>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const errBox = document.getElementById("loginError");
+    const btn = document.getElementById("loginBtn");
+
+    // Show/hide the password text.
+    document.getElementById("togglePw").addEventListener("click", (e) => {
+      const pw = document.getElementById("password");
+      const show = pw.type === "password";
+      pw.type = show ? "text" : "password";
+      e.currentTarget.textContent = show ? "Hide" : "Show";
+      e.currentTarget.setAttribute("aria-pressed", String(show));
+    });
+
+    // Post the credentials; on success the server sets the session cookie and we go home.
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errBox.hidden = true;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      if (!username || !password) {
+        errBox.textContent = "Enter your username and password.";
+        errBox.hidden = false;
+        return;
+      }
+      btn.disabled = true;
+      btn.querySelector(".btn-spinner").hidden = false;
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+        if (res.ok) { location.replace("/"); return; }
+        const data = await res.json().catch(() => ({}));
+        errBox.textContent = data.error || "Sign-in failed.";
+        errBox.hidden = false;
+      } catch (err) {
+        errBox.textContent = "Could not reach the server.";
+        errBox.hidden = false;
+      } finally {
+        btn.disabled = false;
+        btn.querySelector(".btn-spinner").hidden = true;
+      }
+    });
+  </script>
+</body>
+</html>

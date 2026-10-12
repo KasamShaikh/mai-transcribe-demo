@@ -76,6 +76,16 @@ AOAI_DEPLOYMENT=gpt-4-1-mini
 When `AOAI_*` is set, every call (Real time in all modes, and Batch) ends with a full English
 transcript (Hindi/Marathi translated) and a short summary. If unset, the feature is skipped.
 
+### Login
+The whole app (pages, APIs and the live WebSocket) sits behind a sign-in page. Credentials are
+**never stored in the repo**; set them as environment variables (use a secret in Azure):
+```
+APP_USERNAME=<username>
+APP_PASSWORD=<password>
+SESSION_SECRET=<optional random string for signing session cookies>
+```
+If `APP_PASSWORD` is unset, the login gate is disabled (convenient for local development).
+
 ## Deploy to Azure Container Apps
 Build the image remotely and deploy with a **user-assigned managed identity** (replace every
 `<placeholder>`):

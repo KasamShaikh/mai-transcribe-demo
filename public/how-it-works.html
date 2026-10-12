@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
   <link rel="stylesheet" href="how-it-works.css?v=1" />
 </head>
 <body>
@@ -31,6 +31,7 @@
     <a href="index.html">Batch</a>
     <a href="realtime.html">Real time</a>
     <a href="how-it-works.html" class="active">Way it works</a>
+    <a href="#" class="signout" onclick="fetch('/api/logout',{method:'POST'}).then(()=>location.replace('/login.html'));return false;">Sign out</a>
   </nav>
 
   <main class="how">

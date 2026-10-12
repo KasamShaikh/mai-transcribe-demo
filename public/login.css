@@ -1,0 +1,43 @@
+/* Login page layout: hero on the left, sign-in card on the right (stacks on small screens). */
+.login-shell {
+  max-width: 1080px; margin: 40px auto; padding: 0 24px;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: stretch;
+}
+.login-hero {
+  padding: 34px; border-radius: var(--radius);
+  color: #fff; display: flex; flex-direction: column; gap: 16px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  box-shadow: var(--shadow);
+}
+.login-hero .eyebrow { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+.login-hero h2 { margin: 0; font-size: 28px; line-height: 1.25; font-weight: 800; }
+.login-hero h2 em { font-style: normal; opacity: .85; }
+.hero-lead { margin: 0; font-size: 14.5px; line-height: 1.6; opacity: .92; }
+.hero-points { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.9; }
+.hero-foot { margin: auto 0 0; font-size: 12px; opacity: .8; }
+
+.login-main { display: flex; align-items: center; }
+.login-card { width: 100%; padding: 30px; }
+.login-intro { margin: 0 0 20px; color: var(--ink-soft); font-size: 13.5px; }
+.login-card .field-label { display: block; margin: 14px 0 6px; }
+.login-input {
+  width: 100%; padding: 11px 13px; font: inherit; font-size: 14px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff;
+}
+.login-input:focus { outline: 2px solid rgba(151, 20, 77, 0.35); border-color: var(--brand); }
+.pw-wrap { position: relative; }
+.pw-wrap .login-input { padding-right: 64px; }
+.pw-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  border: none; background: none; color: var(--brand); font-weight: 700; font-size: 12.5px; cursor: pointer;
+}
+.login-error {
+  margin: 14px 0 0; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px;
+  background: rgba(220, 53, 69, 0.08); border: 1px solid rgba(220, 53, 69, 0.35); color: var(--danger);
+}
+.login-card .primary-btn { width: 100%; margin-top: 18px; }
+.login-note { margin: 16px 0 0; font-size: 12px; color: var(--ink-mute); text-align: center; }
+
+@media (max-width: 820px) {
+  .login-shell { grid-template-columns: 1fr; margin: 24px auto; }
+}
