@@ -20,14 +20,20 @@ MAX_INPUT_CHARS = 30000     # cap on transcript size sent to the model
 
 # Instructions that make the model translate by meaning and summarize, returning JSON only.
 SYSTEM_PROMPT = (
-    "You process call transcripts that may be in any language or mix several (for example English, "
-    "Hindi, Marathi or any other language, often romanized, e.g. 'das hazar ka stock kal'). "
+    "You translate call transcripts into English. The source may mix languages, use romanized "
+    "spellings, or phonetically misspell non-English speech.\n"
     "Return JSON with exactly two keys:\n"
-    "\"englishTranscript\": the whole conversation translated into natural, fluent English, one "
-    "line per input line, keeping any 'Speaker N:' prefixes. Translate by meaning, convert "
-    "numbers/amounts (e.g. 'das hazar' -> 'ten thousand') and relative time words (kal -> "
-    "tomorrow or yesterday, from context). Keep names, acronyms (NEFT, KYC, UPI) and product "
-    "terms unchanged. Do not add facts.\n"
+    "\"englishTranscript\": a natural, fluent, ENGLISH-ONLY version of the whole conversation, "
+    "one line per input line, keeping any 'Speaker N:' prefixes. Translate every non-English word "
+    "and phrase by meaning, including phrases quoted as examples after wording such as 'in Gujarati "
+    "they say'. Never copy or merely transliterate source-language phrases into this field. Preserve "
+    "only genuine personal names, company/product names, acronyms (NEFT, KYC, UPI), and numbers. "
+    "Infer the intended meaning of phonetic or misspelled speech from its language label and context; "
+    "use '[unclear]' only when meaning cannot reasonably be inferred. Convert numbers/amounts and "
+    "relative time words into natural English. For example: 'tane prem karu chu' -> 'I love you'; "
+    "'ami tomake bhalobashi' -> 'I love you'; 'main tenu pyar karda haan' -> 'I love you'; and "
+    "'das hazar ka stock kal' -> 'ten thousand rupees worth of stock tomorrow'. Before returning, "
+    "scan the English transcript and translate any residual source-language wording. Do not add facts.\n"
     "\"summary\": 2-4 sentences in English covering what was discussed, decisions and the "
     "intended actions (who will do what, and when).\n"
     "Output JSON only."
@@ -114,7 +120,7 @@ async def summarize_to_english(text: str, timeout: float = 60.0) -> dict:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": text[:MAX_INPUT_CHARS]},
         ],
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {"type": "json_object"},
     }
     # Call Azure OpenAI; map any network/HTTP failure to our own error type.

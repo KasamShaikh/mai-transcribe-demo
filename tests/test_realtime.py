@@ -162,6 +162,12 @@ class TestMaiWebSocket(unittest.TestCase):
 
 
 class TestEnglishSummaryHelpers(unittest.TestCase):
+    def test_prompt_requires_meaning_translation_not_transliteration(self):
+        prompt = english_summary.SYSTEM_PROMPT
+        self.assertIn("ENGLISH-ONLY", prompt)
+        self.assertIn("Never copy or merely transliterate", prompt)
+        self.assertIn("'tane prem karu chu' -> 'I love you'", prompt)
+
     def test_collector_replacement_overrides_live(self):
         c = english_summary.TranscriptCollector()
         c.add({"type": "final", "text": "live text"})
