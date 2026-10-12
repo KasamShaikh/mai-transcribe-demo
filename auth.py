@@ -20,7 +20,8 @@ MAX_FAILURES = 5                 # failed attempts allowed per client...
 LOCKOUT_SECONDS = 60             # ...before it is locked out for this long
 
 # Paths reachable without a session: the login page itself and its assets.
-PUBLIC_PATHS = {"/login", "/login.html", "/login.css", "/api/login", "/api/health"}
+PUBLIC_PATHS = {"/login", "/login.html", "/login.css", "/styles.css", "/favicon.ico",
+                "/api/login", "/api/health"}
 
 router = APIRouter()
 _failures: dict[str, list[float]] = {}   # client id -> timestamps of recent failures

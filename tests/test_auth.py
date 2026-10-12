@@ -32,6 +32,12 @@ class TestAuthGate(unittest.TestCase):
     def test_login_page_is_public(self):
         self.assertEqual(self.client.get("/login.html").status_code, 200)
 
+    def test_login_page_assets_are_public(self):
+        for path in ("/styles.css", "/login.css"):
+            r = self.client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self.assertIn("text/css", r.headers["content-type"])
+
     def test_wrong_password_rejected(self):
         r = self.client.post("/api/login", json={"username": "demo-user", "password": "nope"})
         self.assertEqual(r.status_code, 401)
