@@ -184,9 +184,11 @@ async def english(payload: dict):
     """English transcript + summary for a finished (batch) transcript."""
     import english_summary
 
+    # Flatten the phrases (with speaker labels) into plain text for the model.
     text = english_summary.phrases_to_text(payload.get("phrases") or [])
     if not text:
         raise HTTPException(status_code=400, detail="No transcript text provided.")
+    # 503 when the Azure OpenAI settings are absent; 502 if the model call fails.
     if not english_summary.is_configured():
         raise HTTPException(status_code=503, detail="English summary is not configured.")
     try:

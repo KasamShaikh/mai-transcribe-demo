@@ -16,13 +16,17 @@ import wave
 import httpx
 from azure.identity import DefaultAzureCredential
 
+# Speech resource endpoint and REST route for fast transcription (set via env, never hard-coded).
 ENDPOINT = os.environ.get("SPEECH_ENDPOINT", "").rstrip("/")
 API_VERSION = os.environ.get("SPEECH_API_VERSION", "2025-10-15")
 TRANSCRIBE_URL = f"{ENDPOINT}/speechtotext/transcriptions:transcribe?api-version={API_VERSION}"
+# Audience for the Entra token used instead of API keys.
 TOKEN_RESOURCE = "https://cognitiveservices.azure.com"
 
+# Browser audio is resampled to 16 kHz mono PCM16 before it reaches the server.
 SAMPLE_RATE = 16000
 
+# Managed identity in Azure, `az login` locally; plus a small in-memory token cache.
 _credential = DefaultAzureCredential()
 _token_cache = {"value": "", "exp": 0.0}
 
@@ -37,9 +41,12 @@ class MaiError(Exception):
 
 
 def _get_token_sync() -> str:
+    """Return a cached Entra token, refreshing it when <2 minutes remain."""
     now = time.time()
+    # Reuse the cached token while it is still comfortably valid.
     if _token_cache["value"] and now < _token_cache["exp"] - 120:
         return _token_cache["value"]
+    # Otherwise fetch a fresh token and remember its expiry.
     token = _credential.get_token(f"{TOKEN_RESOURCE}/.default")
     _token_cache["value"] = token.token
     _token_cache["exp"] = float(token.expires_on)
@@ -54,6 +61,7 @@ async def get_token() -> str:
 def pcm16_to_wav(pcm: bytes, sample_rate: int = SAMPLE_RATE) -> bytes:
     """Wrap raw 16-bit mono PCM in a WAV container libsndfile can decode."""
     buf = io.BytesIO()
+    # Write a standard WAV header (mono, 16-bit) followed by the raw samples.
     with wave.open(buf, "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)
@@ -72,13 +80,17 @@ def build_definition(
     Mirrors the proven Batch selector: enhancedMode + model. MAI auto-detects
     language and picks its own speaker count, so no locales/maxSpeakers are sent.
     """
+    # Selecting the MAI model: enhancedMode + model name is what routes to MAI-Transcribe-2.
     definition: dict = {
         "enhancedMode": {"enabled": True, "task": "transcribe", "model": "MAI-Transcribe-2"}
     }
+    # Optional keyword biasing: boost domain terms (NEFT, KYC, ...).
     if phrases:
         definition["phraseList"] = {"phrases": phrases}
+    # Optional profanity handling (Masked / Removed / Tags).
     if profanity:
         definition["profanityFilterMode"] = profanity
+    # Optional speaker labels (MAI chooses the speaker count itself).
     if diarization:
         definition["diarization"] = {"enabled": True}
     return definition
@@ -87,6 +99,7 @@ def build_definition(
 def normalize(data: dict) -> dict:
     """Flatten a raw fast-transcription response into the UI-facing shape."""
     phrases = []
+    # Map each recognized phrase (and its words) to short UI-friendly keys.
     for p in data.get("phrases", []):
         phrases.append(
             {
@@ -106,6 +119,7 @@ def normalize(data: dict) -> dict:
                 ],
             }
         )
+    # Whole-audio text plus the set of languages detected across phrases.
     combined = " ".join(cp.get("text", "") for cp in data.get("combinedPhrases", [])).strip()
     detected = sorted({p["locale"] for p in phrases if p["locale"]})
     return {
@@ -119,8 +133,10 @@ def normalize(data: dict) -> dict:
 async def transcribe_wav(wav_bytes: bytes, definition: dict, timeout: float = 120.0) -> dict:
     """POST a WAV clip to the fast-transcription endpoint and return raw JSON."""
     token = await get_token()
+    # Multipart body: the audio file plus the JSON `definition` that selects model/features.
     files = {"audio": ("audio.wav", wav_bytes, "audio/wav")}
     data = {"definition": json.dumps(definition)}
+    # Call the Speech endpoint with the keyless bearer token.
     async with httpx.AsyncClient(timeout=timeout) as client:
         resp = await client.post(
             TRANSCRIBE_URL,
@@ -128,6 +144,7 @@ async def transcribe_wav(wav_bytes: bytes, definition: dict, timeout: float = 12
             files=files,
             data=data,
         )
+    # Surface service rejections (bad audio, unsupported option) as a typed error.
     if resp.status_code != 200:
         raise MaiError(resp.status_code, resp.text)
     return resp.json()
