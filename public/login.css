@@ -24,7 +24,7 @@
   width: 100%; padding: 11px 13px; font: inherit; font-size: 14px; color: var(--ink);
   border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff;
 }
-.login-input:focus { outline: 2px solid rgba(var(--brand-rgb), 0.35); border-color: var(--brand); }
+.login-input:focus { outline: 2px solid rgba(151, 20, 77, 0.35); border-color: var(--brand); }
 .pw-wrap { position: relative; }
 .pw-wrap .login-input { padding-right: 64px; }
 .pw-toggle {

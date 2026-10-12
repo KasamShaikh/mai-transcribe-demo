@@ -19,7 +19,7 @@
 }
 .flow-step small { display: block; font-weight: 500; font-size: 11px; color: var(--ink-mute); margin-top: 2px; }
 .flow-step.accent {
-  background: var(--tint); border-color: var(--tint-line); color: var(--brand);
+  background: #fbeff4; border-color: #ecc6d8; color: var(--brand);
 }
 .flow-arrow { color: var(--brand-2); font-weight: 800; font-size: 18px; }
 .flow.labeled { display: block; }
@@ -36,7 +36,7 @@
   background: var(--brand);
 }
 .pipe-badge.sm { font-size: 11px; padding: 4px 10px; }
-.pipe-badge.mai { background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+.pipe-badge.mai { background: linear-gradient(135deg, #97144d, #cf1b6a); }
 .pipe-badge.standard { background: linear-gradient(135deg, #0a7d6b, #12a37f); }
 .pipe-badge.hybrid { background: linear-gradient(135deg, #6a3ac7, #b26a00); }
 .pipe-tag { font-size: 12px; font-weight: 700; color: var(--ink-mute); }
@@ -46,11 +46,11 @@
 /* Code snippet */
 .snippet {
   margin: 16px 0 0; padding: 14px 16px; border-radius: 8px; overflow-x: auto;
-  background: var(--code-bg); border: 1px solid var(--code-line);
+  background: #241820; border: 1px solid #3a2a32;
 }
 .snippet code {
   font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
-  font-size: 12.5px; line-height: 1.65; color: var(--code-fg); white-space: pre;
+  font-size: 12.5px; line-height: 1.65; color: #f3e3ea; white-space: pre;
 }
 
 /* Characteristics */
@@ -69,7 +69,7 @@
 }
 .compare thead th {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-mute);
-  background: var(--tint-hover);
+  background: #faf1f5;
 }
 .compare tbody tr:hover { background: #fbfafc; }
 .foot-note { margin: 16px 0 0; font-size: 13px; color: var(--ink-mute); line-height: 1.6; }
