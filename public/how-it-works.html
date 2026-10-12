@@ -173,6 +173,41 @@ await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code><
       </ul>
     </section>
 
+    <!-- ENGLISH SUMMARY -->
+    <section class="card pipe">
+      <div class="pipe-head">
+        <span class="pipe-badge hybrid">End of call</span>
+        <span class="pipe-tag">English transcript + summary · planned</span>
+      </div>
+      <p class="pipe-summary">
+        Live and batch transcripts keep every word in the language it was spoken (English, Hindi, Marathi…).
+        When the call ends, the final transcript is sent <strong>once</strong> to an
+        <strong>Azure OpenAI</strong> chat deployment, which returns two extra outputs: a
+        <strong>full English transcript</strong> (Hindi/Marathi translated by meaning, speaker labels kept) and a
+        <strong>short summary</strong>. For example, <em>"I am buying das hazar ka stock kal"</em> becomes
+        <em>"I will buy ten thousand rupees' worth of stock tomorrow."</em> The original transcript is never modified.
+      </p>
+      <div class="flow">
+        <span class="flow-step">Call ends<br /><small>Stop / upload done</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Final transcript<br /><small>MAI / Standard / Hybrid result</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step accent">Azure OpenAI<br /><small>translate + summarize</small></span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">English transcript<br />+ Summary</span>
+      </div>
+      <pre class="snippet"><code># planned — realtime.py, after the last transcript event and before "done"
+english = await english_summary.summarize_to_english(final_phrases)
+await emit({"type": "english", "transcript": english["englishTranscript"], "summary": english["summary"]})
+await emit({"type": "done"})</code></pre>
+      <ul class="chars">
+        <li><b>When</b> once, after Stop (Hybrid: after the MAI replacement)</li>
+        <li><b>Where</b> Real time (all modes) and Batch</li>
+        <li><b>Auth</b> keyless · managed identity</li>
+        <li><b>Failure</b> non-fatal; original transcript is kept</li>
+      </ul>
+    </section>
+
     <!-- COMPARISON -->
     <section class="card">
       <h2 class="card-title">Pick a pipeline</h2>
@@ -202,7 +237,8 @@ await emit({"type": "replacement", "result": mai_client.normalize(raw)})</code><
       </div>
       <p class="foot-note">
         The <a href="index.html">Batch</a> tab remains the one-shot upload/record workflow with full MAI
-        diarization and click-to-seek playback. It is unchanged by these live pipelines.
+        diarization and click-to-seek playback. It will also offer the optional English transcript and summary
+        after transcription completes.
       </p>
     </section>
   </main>
